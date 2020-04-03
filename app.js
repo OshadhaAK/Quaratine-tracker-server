@@ -1,12 +1,15 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const cors = require("cors");
 require("dotenv/config");
+
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 const routeUsers = require('./routes/users')
 
+app.use(cors());
 app.use("/api/users",routeUsers);
 
 app.get("/", (req,res) => {
