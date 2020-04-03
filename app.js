@@ -7,10 +7,14 @@ require("dotenv/config");
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
-const routeUsers = require('./routes/users')
+const routeUsers = require('./routes/users');
+
 
 app.use(cors());
 app.use("/api/users",routeUsers);
+
+const routeQuarantinees = require('./routes/quarantinees');
+app.use("/api/quarantinees",routeQuarantinees);
 
 app.get("/", (req,res) => {
     res.send("Welcome to express tutorial!")
