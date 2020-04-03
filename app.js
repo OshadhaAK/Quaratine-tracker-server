@@ -7,22 +7,22 @@ require("dotenv/config");
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
-const routeUsers = require('./routes/users');
-
-
 app.use(cors());
+
+const routeUsers = require('./routes/users');
 app.use("/api/users",routeUsers);
 
 const routeQuarantinees = require('./routes/quarantinees');
 app.use("/api/quarantinees",routeQuarantinees);
 
+const routeProvinces = require('./routes/provinces');
+app.use("/api/provinces",routeProvinces);
+
 app.get("/", (req,res) => {
     res.send("Welcome to express tutorial!")
 });
 
-/* app.get("/api/courses", (req,res) => {
-    res.send([1,2,3]);
-}); */
+
 
 mongoose.connect(process.env.DB_CONNECTION, 
 { useNewUrlParser: true }, () =>

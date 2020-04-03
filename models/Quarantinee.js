@@ -6,7 +6,7 @@ const QuarantineeSchema = mongoose.Schema({
       require: true
     },
     age: {
-        type: String,
+        type: Number,
         required: true
     },
 });
