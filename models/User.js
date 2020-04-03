@@ -8,7 +8,15 @@ const UserSchema = mongoose.Schema({
     emailaddress: {
         type: String,
         required: true
-    }
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    regNo: {
+        type: String,
+        required: true
+    },
 });
 
 module.exports = mongoose.model("Users", UserSchema);

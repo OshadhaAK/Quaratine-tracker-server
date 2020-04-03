@@ -29,7 +29,9 @@ router.get("/:userId", async (req,res) => {
 router.post("/", async (req, res) => {
     const myuser = new User({
         name: req.body.name,
-        emailaddress:  req.body.emailaddress
+        emailaddress:  req.body.emailaddress,
+        password: req.body.password,
+        regNo: req.body.regNo
     });
 
     try {
@@ -50,7 +52,9 @@ router.patch("/:userId", async (req,res) => {
             { _id: id },
             {
                 $set: { name: req.body.name,
-                        emailaddress: req.body.emailaddress
+                        emailaddress: req.body.emailaddress,
+                        password: req.body.password,
+                        regNo: req.body.regNo
                       }
             }
         );
