@@ -85,14 +85,14 @@ router.delete("/:userId", async (req, res) => {
 router.post('/login', async (req,res) => {
 
     const {error} = loginValidation(req.body);
-    if(error)return res.status(400).send(error.details[0].message);
+    if(error)return res.send(error.details[0].message);
 
     const user = await User.findOne({emailaddress: req.body.emailaddress});
-    if(!user) return res.status(400).send("Wrong Email Address!");
+    if(!user) return res.send("Wrong Email Address!");
 
 
     const validPass = await bcrypt.compare(req.body.password, user.password);
-    if(!validPass) return res.status(400).send("Wrong Password!");
+    if(!validPass) return res.send("Wrong Password!");
 
 
     /* const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET);
