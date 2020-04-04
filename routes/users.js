@@ -3,6 +3,12 @@ const router = express.Router();
 
 const User = require("../models/User");
 
+
+const { registerValidation, loginValidation } = require('../validation');
+const bcrypt = require('bcryptjs');
+
+
+
 router.get("/", async (req,res) => {
     try {
         const users = await User.find();
@@ -72,6 +78,54 @@ router.delete("/:userId", async (req, res) => {
     } catch (err){
         res.status(500).json({ message: err });
     }
-})
+});
+
+
+
+router.post('/login', async (req,res) => {
+
+    const {error} = loginValidation(req.body);
+    if(error)return res.status(400).send(error.details[0].message);
+
+    const user = await User.findOne({emailaddress: req.body.emailaddress});
+    if(!user) return res.status(400).send("Wrong Email Address!");
+
+
+    const validPass = await bcrypt.compare(req.body.password, user.password);
+    if(!validPass) return res.status(400).send("Wrong Password!");
+
+
+    /* const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET);
+    res.header('auth-token', token).send(token); */
+
+    res.send('Success');
+
+});
+
+router.post('/register', async (req, res) => {
+
+    const {error} = registerValidation(req.body);
+    if(error)return res.status(400).send(error.details[0].message);
+
+    const emailExist = await User.findOne({emailaddress: req.body.emailemailaddress});
+    if(emailExist) return res.status(400).send("Email already exists!");
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt); 
+
+    const user = new User({
+        name: req.body.name,
+        emailaddress:  req.body.emailaddress,
+        password: hashedPassword,
+        regNo: req.body.regNo
+    });
+    
+    try{
+        const savedUser = await user.save();
+        res.send(savedUser);
+    }catch(err){
+        res.status(400).send(err);
+    }
+});
 
 module.exports = router;
