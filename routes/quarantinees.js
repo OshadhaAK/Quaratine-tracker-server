@@ -6,7 +6,20 @@ const Quarantinee = require("../models/Quarantinee");
 router.post("/", async (req, res) => {
     const myquarantinee = new Quarantinee({
         name: req.body.name,
-        age: req.body.age
+        nic: req.body.nic,
+        age: req.body.age,
+        tel: req.body.tel,
+        address: req.body.address,
+        province: req.body.province,
+        district: req.body.district,
+        gn: req.body.gn,
+        phi: req.body.phi,
+        band: req.body.band,
+        gps: req.body.gps,
+        startdate: req.body.startdate,
+        enddate: req.body.enddate        
+        /* name: req.body.name,
+        age: req.body.age */
     });
 
     try {
