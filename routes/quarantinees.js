@@ -42,4 +42,19 @@ router.get("/", async (req,res) => {
     }
 });
 
+router.get("/:phi_id", async (req,res) => {
+    try{
+        const id = req.params.phi_id;
+        const quarantinee = await Quarantinee.find({phi: id});
+        if(quarantinee) {
+            res.status(200).json(quarantinee);
+        }else{
+            res.status(404).json({ message: "No valid entry found" });
+        }
+    }catch (err){
+        res.status(500).json({ message: err });
+    }
+});
+
+
 module.exports = router;
