@@ -21,6 +21,9 @@ app.use("/api/provinces",routeProvinces);
 const routeDistricts = require('./routes/districts');
 app.use("/api/districts",routeDistricts);
 
+const routeGns = require('./routes/gns');
+app.use("/api/gns",routeGns);
+
 
 app.get("/", (req,res) => {
     res.send("Welcome to express tutorial!")
