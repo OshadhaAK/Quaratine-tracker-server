@@ -41,7 +41,7 @@ const QuarantineeSchema = mongoose.Schema({
         type: Number,
         required: true
     },
-    gsp: {
+    gps: {
       type: String,
       require: true
     },
