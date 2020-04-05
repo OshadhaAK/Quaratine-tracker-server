@@ -18,6 +18,10 @@ app.use("/api/quarantinees",routeQuarantinees);
 const routeProvinces = require('./routes/provinces');
 app.use("/api/provinces",routeProvinces);
 
+const routeDistricts = require('./routes/districts');
+app.use("/api/districts",routeDistricts);
+
+
 app.get("/", (req,res) => {
     res.send("Welcome to express tutorial!")
 });

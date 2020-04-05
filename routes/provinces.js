@@ -16,8 +16,8 @@ router.get("/", async (req,res) => {
 
 router.post("/", async (req, res) => {
     const myprovince = new Province({
-        central: req.body.central
-        
+        centralProvince: req.body.centralProvince,
+        sabaragamuwaProvince: req.body.sabaragamuwaProvince
     });
 
     try {

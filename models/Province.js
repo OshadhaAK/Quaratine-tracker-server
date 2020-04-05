@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 const ProvinceSchema = mongoose.Schema({
-    sabaragamuwa: {
+    sabaragamuwaProvince: {
+      type: Array,
+      require: true
+    },
+    centralProvince: {
       type: Array,
       require: true
     }
