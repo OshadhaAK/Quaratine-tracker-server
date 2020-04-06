@@ -53,6 +53,10 @@ const QuarantineeSchema = mongoose.Schema({
       type: Date,
       require: true
     },
+    hasMoved: {
+      type: Boolean,
+      required: true
+    }
 });
 
 module.exports = mongoose.model("Quarantinees", QuarantineeSchema);

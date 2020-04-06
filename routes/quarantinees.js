@@ -17,7 +17,8 @@ router.post("/", async (req, res) => {
         band: req.body.band,
         gps: req.body.gps,
         startdate: req.body.startdate,
-        enddate: req.body.enddate        
+        enddate: req.body.enddate, 
+        hasMoved: req.body.hasMoved       
         /* name: req.body.name,
         age: req.body.age */
     });
