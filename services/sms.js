@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const Notify = require('../models/Notify');
+const Quarantinee = require("../models/Quarantinee");
 
 var TeleSignSDK = require('telesignsdk');
 
@@ -23,10 +24,10 @@ const messageType = "ARN";
 
 console.log("## MessagingClient.message ##");
 
-router.post("/sendnotification", async (req,res) => {
+router.post("/sendnotification/:band", async (req,res) => {
     console.log("sms send");
     try {
-        const notify = new Notify({
+        /* const notify = new Notify({
             band: req.body.band,
             hasMoved: req.body.hasMoved
         });
@@ -35,7 +36,25 @@ router.post("/sendnotification", async (req,res) => {
         res.status(201).json({
             message: "Handling SMS POST request",
             Notification:  savedNotification 
-        });
+        }); */
+        const bandInfo = req.params.band;
+        const updatedBand = await Notify.updateOne(
+            {band: bandInfo},
+            {
+                $set: {
+                    hasMoved: false
+                }
+            }
+        );
+        await Quarantinee.updateOne(
+            {band: 160292},
+            {
+                $set: {
+                    hasMoved: false
+                }
+            }
+        );
+        res.status(200).json(updatedBand);
     }catch (err) {
         res.status(500).json({ message: err }); 
     }

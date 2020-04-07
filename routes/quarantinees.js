@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const Quarantinee = require("../models/Quarantinee");
+const Notify = require('../models/Notify');
 
 router.post("/", async (req, res) => {
     const myquarantinee = new Quarantinee({
@@ -23,12 +24,20 @@ router.post("/", async (req, res) => {
         age: req.body.age */
     });
 
+    const newBand = new Notify({
+        band: req.body.band,
+        hasMoved: req.body.hasMoved 
+    })
+
     try {
         const savedQuarantinee = await myquarantinee.save();
+        const savedNotification = await newBand.save();
         res.status(201).json({
             message: "Handling POST request",
-            createdQuarantinee: savedQuarantinee
+            createdQuarantinee: savedQuarantinee,
+            createdBand: savedNotification
         });
+        
     }catch (err) {
         res.status(500).json({ message: err }); 
     }
