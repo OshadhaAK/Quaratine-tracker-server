@@ -8,6 +8,10 @@ const NotifySchema = mongoose.Schema({
     hasMoved: {
       type: Boolean,
       required: true
+    },
+    location: {
+      type: Array,
+      require: true
     }
 });
 

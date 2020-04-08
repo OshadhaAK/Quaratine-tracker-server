@@ -38,16 +38,21 @@ router.post("/sendnotification/:band", async (req,res) => {
             Notification:  savedNotification 
         }); */
         const bandInfo = req.params.band;
+        const newLocation = '51.723858;7.895982'
         const updatedBand = await Notify.updateOne(
             {band: bandInfo},
             {
                 $set: {
                     hasMoved: false
+                    
+                },
+                $push: {
+                    location: newLocation
                 }
             }
         );
         await Quarantinee.updateOne(
-            {band: 160292},
+            {band: bandInfo},
             {
                 $set: {
                     hasMoved: false
@@ -70,5 +75,28 @@ async function messageCallback(error, responseBody) {
         console.error("Unable to send message. " + error);
     }
 }
+
+router.get("/", async (req,res) => {
+    try {
+        const band = await Notify.find();
+        res.status(200).json(band);
+    }catch (err) {
+        res.status(500).json({ message: err });
+    }
+});
+
+router.get("/:bandId", async (req,res) => {
+    try{
+        const id = req.params.bandId;
+        const quarantinee = await Notify.find({band: id});
+        if(quarantinee) {
+            res.status(200).json(quarantinee);
+        }else{
+            res.status(404).json({ message: "No valid entry found" });
+        }
+    }catch (err){
+        res.status(500).json({ message: err });
+    }
+});
 
 module.exports = router;
