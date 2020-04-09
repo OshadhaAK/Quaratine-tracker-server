@@ -26,7 +26,8 @@ router.post("/", async (req, res) => {
 
     const newBand = new Notify({
         band: req.body.band,
-        hasMoved: req.body.hasMoved 
+        hasMoved: req.body.hasMoved,
+        location: req.body.gps
     })
 
     try {

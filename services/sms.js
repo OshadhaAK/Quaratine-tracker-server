@@ -37,8 +37,21 @@ router.post("/sendnotification/:band", async (req,res) => {
             message: "Handling SMS POST request",
             Notification:  savedNotification 
         }); */
-        const bandInfo = req.params.band;
+        
         const newLocation = '51.723858;7.895982'
+        const bandInfo = req.params.band;
+        const temp_quarantinee = await Quarantinee.find({band: bandInfo});
+        const center = temp_quarantinee[0].gps.split(";");
+        const newPosition = newLocation.split(";");
+        console.log(temp_quarantinee,center);
+        const temp_lat1 = center[0];
+        const temp_lon1 = center[1];
+        const temp_lat2 = newPosition[0];
+        const temp_lon2 = newPosition[1];
+        
+        console.log(temp_lat1,temp_lon1,temp_lat2,temp_lon2)
+        const distance = getDistanceFromLatLonInm(temp_lat1,temp_lon1,temp_lat2,temp_lon2);
+        console.log("distance",distance);
         const updatedBand = await Notify.updateOne(
             {band: bandInfo},
             {
@@ -99,4 +112,21 @@ router.get("/:bandId", async (req,res) => {
     }
 });
 
+ function getDistanceFromLatLonInm(lat1,lon1,lat2,lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  var dLon = deg2rad(lon2-lon1); 
+  var a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  var d = R * c; // Distance in km
+  return d*1000;
+}
+
+ function deg2rad(deg) {
+  return deg * (Math.PI/180)
+}
 module.exports = router;
