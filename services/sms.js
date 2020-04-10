@@ -84,7 +84,7 @@ router.post("/sendnotification/:band", async (req,res) => {
                 }
             );
             res.status(200).json(updatedBand);
-            client.sms.message(messageCallback, phoneNumber, message+" BAND ID: "+updatedBand.band, messageType);
+            client.sms.message(messageCallback, phoneNumber, message+" BAND ID: "+temp_quarantinee[0].band, messageType);
         }
         else{
             console.log("less",distance);
