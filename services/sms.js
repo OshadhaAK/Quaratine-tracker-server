@@ -31,48 +31,80 @@ router.post("/sendnotification/:band", async (req,res) => {
             band: req.body.band,
             hasMoved: req.body.hasMoved
         });
-        client.sms.message(messageCallback, phoneNumber, message+" BAND ID: "+notify.band, messageType);
+        
         const savedNotification = await notify.save();
         res.status(201).json({
             message: "Handling SMS POST request",
             Notification:  savedNotification 
         }); */
         
-        const newLocation = '51.723858;7.895982'
         const bandInfo = req.params.band;
-        const temp_quarantinee = await Quarantinee.find({band: bandInfo});
+        console.log(bandInfo)
+        const infoArr =  bandInfo.split("_");
+        console.log(infoArr)
+        const bandID = infoArr[0];
+        const temp_lat2 = infoArr[1];
+        const temp_lon2 = infoArr[2];
+
+
+        const newLocation = String(temp_lat2)+";"+String(temp_lon2);
+        
+        const temp_quarantinee = await Quarantinee.find({band: bandID});
         const center = temp_quarantinee[0].gps.split(";");
-        const newPosition = newLocation.split(";");
         console.log(temp_quarantinee,center);
         const temp_lat1 = center[0];
         const temp_lon1 = center[1];
-        const temp_lat2 = newPosition[0];
-        const temp_lon2 = newPosition[1];
+        
         
         console.log(temp_lat1,temp_lon1,temp_lat2,temp_lon2)
         const distance = getDistanceFromLatLonInm(temp_lat1,temp_lon1,temp_lat2,temp_lon2);
         console.log("distance",distance);
-        const updatedBand = await Notify.updateOne(
-            {band: bandInfo},
-            {
-                $set: {
-                    hasMoved: false
+
+        if(distance>10){
+            console.log("greater",distance);
+            
+            const updatedBand = await Notify.updateOne(
+                {band: bandID},
+                {
+                    $set: {
+                        hasMoved: true
+                        
+                    },
+                    $push: {
+                        location: newLocation
+                    }
+                }
+            );
+            await Quarantinee.updateOne(
+                {band: bandID},
+                {
+                    $set: {
+                        hasMoved: true
+                    }
+                }
+            );
+            res.status(200).json(updatedBand);
+            client.sms.message(messageCallback, phoneNumber, message+" BAND ID: "+updatedBand.band, messageType);
+        }
+        else{
+            console.log("less",distance);
+            const updatedBand = await Notify.updateOne(
+                {band: bandID},
+                {
                     
-                },
-                $push: {
-                    location: newLocation
+                    $push: {
+                        location: newLocation
+                    }
                 }
-            }
-        );
-        await Quarantinee.updateOne(
-            {band: bandInfo},
-            {
-                $set: {
-                    hasMoved: false
-                }
-            }
-        );
-        res.status(200).json(updatedBand);
+            );
+            
+            res.status(200).json(updatedBand);
+        }
+
+
+
+
+       
     }catch (err) {
         res.status(500).json({ message: err }); 
     }
