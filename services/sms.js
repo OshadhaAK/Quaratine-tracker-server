@@ -46,64 +46,67 @@ router.post("/sendnotification/:band", async (req,res) => {
         const temp_lat2 = infoArr[1];
         const temp_lon2 = infoArr[2];
 
-
-        const newLocation = String(temp_lat2)+";"+String(temp_lon2);
+        console.log(temp_lat2,temp_lon2);
         
-        const temp_quarantinee = await Quarantinee.find({band: bandID});
-        const center = temp_quarantinee[0].gps.split(";");
-        console.log(temp_quarantinee,center);
-        const temp_lat1 = center[0];
-        const temp_lon1 = center[1];
+        if(typeof temp_lat2!='undefined' && typeof temp_lon2!='undefined'){
+            const newLocation = String(temp_lat2)+";"+String(temp_lon2);
         
-        
-        console.log(temp_lat1,temp_lon1,temp_lat2,temp_lon2)
-        const distance = getDistanceFromLatLonInm(temp_lat1,temp_lon1,temp_lat2,temp_lon2);
-        console.log("distance",distance);
-
-        if(distance>10){
-            console.log("greater",distance);
+            const temp_quarantinee = await Quarantinee.find({band: bandID});
+            const center = temp_quarantinee[0].gps.split(";");
+            console.log(temp_quarantinee,center);
+            const temp_lat1 = center[0];
+            const temp_lon1 = center[1];
             
-            const updatedBand = await Notify.updateOne(
-                {band: bandID},
-                {
-                    $set: {
-                        hasMoved: true
+            
+            console.log(temp_lat1,temp_lon1,temp_lat2,temp_lon2)
+            const distance = getDistanceFromLatLonInm(temp_lat1,temp_lon1,temp_lat2,temp_lon2);
+            console.log("distance",distance);
+
+            if(distance>20){
+                console.log("greater",distance);
+                
+                const updatedBand = await Notify.updateOne(
+                    {band: bandID},
+                    {
+                        $set: {
+                            hasMoved: true
+                            
+                        },
+                        $push: {
+                            location: newLocation
+                        }
+                    }
+                );
+                await Quarantinee.updateOne(
+                    {band: bandID},
+                    {
+                        $set: {
+                            hasMoved: true
+                        }
+                    }
+                );
+                res.status(200).json(updatedBand);
+                client.sms.message(messageCallback, phoneNumber, message+" BAND ID: "+temp_quarantinee[0].band, messageType);
+            }
+            else{
+                console.log("less",distance);
+                const updatedBand = await Notify.updateOne(
+                    {band: bandID},
+                    {
                         
-                    },
-                    $push: {
-                        location: newLocation
+                        $push: {
+                            location: newLocation
+                        }
                     }
-                }
-            );
-            await Quarantinee.updateOne(
-                {band: bandID},
-                {
-                    $set: {
-                        hasMoved: true
-                    }
-                }
-            );
-            res.status(200).json(updatedBand);
-            client.sms.message(messageCallback, phoneNumber, message+" BAND ID: "+temp_quarantinee[0].band, messageType);
+                );
+                
+                res.status(200).json(updatedBand);
+            }
+    
         }
         else{
-            console.log("less",distance);
-            const updatedBand = await Notify.updateOne(
-                {band: bandID},
-                {
-                    
-                    $push: {
-                        location: newLocation
-                    }
-                }
-            );
-            
-            res.status(200).json(updatedBand);
+            res.status(500).json({ message: "Co-ordinates Not Defined" });
         }
-
-
-
-
        
     }catch (err) {
         res.status(500).json({ message: err }); 
